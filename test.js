@@ -1,4 +1,5 @@
 const redis = require("redis")
+const puppeteer = require('puppeteer');
 var util = require('./date');
 
 const client = redis.createClient({
@@ -6,37 +7,29 @@ const client = redis.createClient({
     port: 6379
 });
 
-client.on('error', err => {
-    console.log('Error ' + err);
-});
+const fs = require('fs')
 
-var buff = Buffer.from("中文", 'utf-8').toString('base64')
-console.log(buff)
-
-var buff1 = Buffer.from("西瓜", 'utf-8').toString('base64')
-console.log(buff1)
-
-let rawStr = Buffer.from(buff1, 'base64').toString('utf-8')
-console.log(rawStr)
-
-var nowStr = util.format();
-var buff = Buffer.from("毛衣", 'utf-8').toString('base64')
-var key = nowStr + "_" + buff
-
-console.log(key)
-console.log("写入redis，key为" + key)
-client.set(key, "value", redis.print);
-
-// if (client.lrange(key, 0, 100) != null) {
-//     console.log("exists")
-// } else if(client.lrange(key, 0, 100) == null){
-//     console.log("not exist")
-// }
-
-if (client.exists("20210912_5q+b6KGj") == 1) {
-    console.log("exists")
-} else if(client.exists("20210912_5q+b6KGj") == 0){
-    console.log("not exist")
+function ReadFileByLines(fileName) {
+    try {
+        const data = fs.readFileSync('/Users/jinbin/downloaded_639/crawler/top20.txt', 'utf8')
+        //console.log(data)
+        const kw_list = []
+        var list = data.split("\n")
+        for (var i = 0; i < list.length; i++) {
+            kw_list.push(list[i]);
+        }
+        return kw_list;
+      } catch (err) {
+        console.error(err)
+    }
 }
+
+var start = new Date().getTime()
+
+var result = ReadFileByLines("/Users/jinbin/downloaded_639/crawler/top20.txt")
+console.log(result)
+
+var end = new Date().getTime()
+console.log("总体运行时间: " + (end - start) + "s")
 
 process.exit()
